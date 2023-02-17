@@ -1,27 +1,19 @@
 [
     {
-        "id": 1,
-        "name": "Fire TV Stick",
-        "price": "32.99"
+        "name": "etherium",
+        "description": "aquesta moneda es l'etherium...",
+        "lastCotization": "20"
     },
     {
-        "id": 2,
-        "name": "Amazon Echo Dot",
-        "price": "49.99"
+        "name": "bitcoin",
+        "description": "aquesta moneda es el bitcoin...",
+        "lastCotization": "30"
     },
+
     {
-        "id": 3,
-        "name": "Amazon Echo, Black",
-        "price": "149.99"
-    },
-    {
-        "id": 4,
-        "name": "Fire Tablet, 7",
-        "price": "47.49"
-    },
-    {
-        "id": 5,
-        "name": "Kindle Paperwhitefff",
-        "price": "104.99"
+        "name": "calçot",
+        "description": "aquesta moneda es el calçot...",
+        "lastCotization": "15"
     }
+
 ]
