@@ -3,6 +3,8 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+const cors = require('cors');
+app.use(cors());
 
 var PRODUCTS_FILE = path.join(__dirname, 'src/assets/js/components/product-data.json');
 
@@ -18,6 +20,7 @@ app.use(function(req, res, next) {
     // an API server in conjunction with something like webpack-dev-server.
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE');
 
     // Disable caching so we'll always get the latest comments.
@@ -25,7 +28,34 @@ app.use(function(req, res, next) {
     next();
 });
 
+
+app.post('/api/searchCryptos', function(req, res) {
+    
+    const cryptoText = req.body.cryptoText;
+    const originalProducts = JSON.parse(req.body.originalProducts);
+
+    //TODO logica per la busqueda de les cryptos
+    if(cryptoText == '')
+    {
+        return;
+    }
+
+    var searchedCryptos = [];
+    for(var i = 0; i < originalProducts.length; i++)
+    {
+        var productName = originalProducts[i]['name'].toLowerCase();
+        if(productName.indexOf(cryptoText.toLowerCase()) >= 0)
+        {
+            searchedCryptos.push(originalProducts[i]);
+        }
+    }
+
+    res.json(JSON.parse(searchedCryptos));
+   
+});
+
 app.get('/api/products', function(req, res) {
+
     fs.readFile(PRODUCTS_FILE, function(err, data) {
         if (err) {
             console.error(err);

@@ -9,7 +9,8 @@
         
 
         <div class="form-group">
-            <input type="text" name="search" v-model="productSearch" placeholder="Search products" class="form-control" v-on:keyup="searchProducts">
+            <input type="text" name="search" v-model="productSearch" placeholder="Search cryptocoins" class="form-control-edited" >
+            <button style="margin-left: 20px;" @click="searchCryptos">Search</button>
         </div>
 
         <table class="table table-hover">
@@ -37,14 +38,15 @@
 </template>
 
 <script>
-
+    import axios from 'axios';
+    
     export default{
         data(){
             return{
                 products: [],
                 originalProducts: [],
-                productSearch: '',
-                sort: 'ASC'
+                sort: 'ASC',
+                searchResults: []
             }
         },
 
@@ -82,9 +84,18 @@
                 });
             },
 
-            searchProducts: function()
+            searchCryptos: function()
             {
-                if(this.productSearch == '')
+                axios.post('http://localhost:3000/api/searchCryptos', { params: { cryptoText: this.productSearch, originalProducts: JSON.stringify(this.originalProducts) } })
+                .then(response => {
+                    this.products = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+
+                /*if(this.productSearch == '')
                 {
                     this.products = this.originalProducts;
                     return;
@@ -101,6 +112,9 @@
                 }
 
                 this.products = searchedProducts;
+                */
+
+
             }
         }
     }
