@@ -9,12 +9,17 @@
                 <div><button class="btn btn-primary" data-toggle="modal" data-target="#cartModal">Cart ({{totalItems}})</button></div>
                     <ul>
                         <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
-                        <li v-for="product in cartCryptos">
+                        <li v-for="(product,index) in cartCryptos">
                         <h3>{{ product.name }}</h3>
                         <p>{{ product.description }}</p>
-                        <button @click="removeItem(product)"><span class="glyphicon glyphicon-trash"></span></button>
+                        <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
                         </li>
-                        ${{ Total }}
+                        <p>Total price shopping cart:{{ totalPriceCart }} </p>
+                        <button v-on:click="payMethod">PAY</button>
+                        <div ref="paypal"></div>
+                        <div v-if="this.paid == true">PAGAMENT CONFIRMAT!!!</div>
+                        
+                        
                     </ul>
             </div>
             
@@ -52,8 +57,9 @@
 
 <script>
     import axios from 'axios';
-    
+   
     export default{
+        
         data(){
             return{
                 products: [],
@@ -61,17 +67,21 @@
                 sort: 'ASC',
                 searchResults: [],
                 cartCryptos: [],
+                total: 0,
+                paid: 'true'
             }
         },
 
         computed: {
-            Total() {
-                let total = 0;
-                this.cartCryptos.forEach(item => {
-                total += (item.lastCotization);
+            totalPriceCart() {
+                this.total = 0;
+                this.cartCryptos.forEach(item => 
+                {
+                    let parsedCotization = parseInt(item.lastCotization)
+                    this.total += parsedCotization;
                 });
-                return total;
-            }
+                return this.total;
+            },
         },
             created: function()
         {
@@ -82,11 +92,9 @@
           
             cryptoSort: function() 
             {   
-                console.log("sort abans d'entrar als ifs"+ this.sort);
                 if (this.sort == 'ASC') {
                     this.products.sort((a, b) => a.lastCotization - b.lastCotization)
                     this.sort = 'DESC'
-                    console.log("sort a descendent"+ this.sort);
                 
                 } else {
                     this.products.sort((a, b) => b.lastCotization - a.lastCotization)
@@ -150,19 +158,63 @@
 
                 if (isCryptoInCart === false) {
                     this.cartCryptos.push(cryptoToAdd);
-                    this.totalPriceCart += cryptoToAdd.lastCotization
+                    //this.totalPriceCart += cryptoToAdd.lastCotization
                 }
                 
             },
 
-            removeItem: function(product)
+            removeItem: function(index)
             {
-                this.cartCryptos.splice(product, 1);
-                
-            }
+                this.cartCryptos.splice(index, 1);
+            },
+
+            payMethod: function()
+            {
+                const script = document.createElement("script");
+                script.src =
+                "https://www.paypal.com/sdk/js?client-id=AVi6atpIdc8eTHpjntEJ0iME42OOwC6LUiXaHgqPnUTntMx4rEy4QZEsq8cWybvql7HB-BS2y6yw_taK";
+                script.addEventListener("load", this.setLoaded);
+                document.body.appendChild(script);
+            },
+
+            setLoaded: function() 
+            {
+                this.loaded = true;
+                window.paypal
+                .Buttons({
+                    createOrder: (data, actions) => 
+                    {
+                        return actions.order.create
+                        ({
+                            purchase_units: 
+                            [
+                                {
+                                    description: "ordre",
+                                    amount: {
+                                        currency_code: "USD",
+                                        value: "10"
+                                    }
+                                }
+                            ]
+                        });
+                    },
             
+                    onApprove: async (data, actions) => 
+                    {
+                        const order = await actions.order.capture();
+                        this.paid = true;
+                        console.log(order);
+                    },
+                    onError: err => 
+                    {
+                        console.log(err);
+                    }
+                })
+        
+                .render(this.$refs.paypal);
         }
     }
+}
 
     
 </script>

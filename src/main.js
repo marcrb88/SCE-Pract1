@@ -8,6 +8,8 @@ Vue.use(VueResource);
 
 
 import App from './App.vue'
+import { loadScript } from '@paypal/paypal-js';
+    import { PayPalButtons } from '@paypal/react-paypal-js';
 
 const AllProducts = require('./assets/js/components/all-products.vue');
 const CreateProduct = require('./assets/js/components/create-product.vue');
