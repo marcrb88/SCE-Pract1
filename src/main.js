@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 import VueResource from 'vue-resource';
 Vue.use(VueResource);
 
+
 import App from './App.vue'
 
 const AllProducts = require('./assets/js/components/all-products.vue');

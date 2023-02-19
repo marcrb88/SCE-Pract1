@@ -3,8 +3,21 @@
         <div>
             <h1>All Products</h1>
         </div>
-        <div>
+        <div class="flex">
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
+            <div>
+                <div><button class="btn btn-primary" data-toggle="modal" data-target="#cartModal">Cart ({{totalItems}})</button></div>
+                    <ul>
+                        <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
+                        <li v-for="product in cartCryptos">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.description }}</p>
+                        <button @click="removeItem(product)"><span class="glyphicon glyphicon-trash"></span></button>
+                        </li>
+                        ${{ Total }}
+                    </ul>
+            </div>
+            
         </div>
         
 
@@ -23,7 +36,7 @@
                     <div>
                         Preu historic:<br>
                         {{ product.lastCotization }}  
-                        <button id="cart" class="btn btn-primary">Add to Cart</button>
+                        <button @click="addToCart(product)" id="cart" class="btn btn-primary">Add to Cart</button>
                     </div>
                     <br>
                     <br>
@@ -46,11 +59,21 @@
                 products: [],
                 originalProducts: [],
                 sort: 'ASC',
-                searchResults: []
+                searchResults: [],
+                cartCryptos: [],
             }
         },
 
-        created: function()
+        computed: {
+            Total() {
+                let total = 0;
+                this.cartCryptos.forEach(item => {
+                total += (item.lastCotization);
+                });
+                return total;
+            }
+        },
+            created: function()
         {
             this.fetchProductData();
         },
@@ -93,7 +116,8 @@
                 .catch(error => {
                     console.error(error);
                 });
-
+                
+                
 
                 /*if(this.productSearch == '')
                 {
@@ -115,7 +139,30 @@
                 */
 
 
+            },
+
+            addToCart: function(cryptoToAdd)
+            {
+                // Add the item
+			    let cryptoInCart = this.cartCryptos.filter(product => product.name === cryptoToAdd.name);
+                
+			    let isCryptoInCart = cryptoInCart.length > 0;
+
+                if (isCryptoInCart === false) {
+                    this.cartCryptos.push(cryptoToAdd);
+                    this.totalPriceCart += cryptoToAdd.lastCotization
+                }
+                
+            },
+
+            removeItem: function(product)
+            {
+                this.cartCryptos.splice(product, 1);
+                
             }
+            
         }
     }
+
+    
 </script>
