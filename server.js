@@ -34,25 +34,28 @@ app.post('/api/searchCrypto', function(req,res) {
     const products = req.body.products;
     const originalProducts = req.body.originalProducts;
 
+    var returnProducts = false;
+
     if(searchQuery == '')
-    {
-        products = originalProducts;
-    }
+        returnProducts = true;
     
-    var searchedCryptos = [];
-    for(var i = 0; i < originalProducts.length; i++)
+    else
     {
-        var productName = originalProducts[i]['name'].toLowerCase();
-
-        if(productName.indexOf(searchQuery.toLowerCase()) >= 0)
+        var searchedCryptos = [];
+        for(var i = 0; i < originalProducts.length; i++)
         {
-            searchedCryptos.push(originalProducts[i]);
-        }
-    }
+            var productName = originalProducts[i]['name'].toLowerCase();
     
-    products = searchedCryptos;
+            if(productName.indexOf(searchQuery.toLowerCase()) >= 0)
+            {
+                searchedCryptos.push(originalProducts[i]);
+            }
+        }
+        
+    }
+   
 
-    res.json(products);
+    returnProducts ? res.json(originalProducts) : res.json(products);
 
 });
 
