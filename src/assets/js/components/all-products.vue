@@ -17,7 +17,8 @@
                         <p>Total price shopping cart:{{ totalPriceCart }} </p>
                         <button v-on:click="payMethod">PAY</button>
                         <div ref="paypal"></div>
-                        <div v-if="this.paid == true">PAGAMENT CONFIRMAT!!!</div>
+                        <div v-if="this.paid == true">PAYMENT DONE!!!</div>
+                        <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
                         
                         
                     </ul>
@@ -27,8 +28,12 @@
         
 
         <div class="form-group">
-            <input type="text" name="search" v-model="productSearch" placeholder="Search cryptocoins" class="form-control-edited" >
-            <button style="margin-left: 20px;" @click="searchCryptos">Search</button>
+            <div>
+                <input type="text" class ="form-control-edited" v-model="searchQuery" @input="search">
+                <p>{{ searchResults }}</p>
+            </div>
+
+           <!--<button style="margin-left: 20px;" @click="searchCryptos">Search</button> -->
         </div>
 
         <table class="table table-hover">
@@ -57,9 +62,10 @@
 
 <script>
     import axios from 'axios';
-   
-    export default{
-        
+    import $ from 'jquery'; 
+
+
+    export default{  
         data(){
             return{
                 products: [],
@@ -68,7 +74,8 @@
                 searchResults: [],
                 cartCryptos: [],
                 total: 0,
-                paid: 'true'
+                paid: 'true',
+                noCryptos: false
             }
         },
 
@@ -115,37 +122,17 @@
                 });
             },
 
-            searchCryptos: function()
+            search: function()
             {
-                axios.post('http://localhost:3000/api/searchCryptos', { params: { cryptoText: this.productSearch, originalProducts: JSON.stringify(this.originalProducts) } })
-                .then(response => {
-                    this.products = response.data;
-                })
-                .catch(error => {
-                    console.error(error);
+                this.$http.post('http://localhost:3000/api/searchCrypto' , {
+                    searchQuery: this.searchQuery,
+                    products: this.products
+
+                }).then((response) => {
+                    this.products = response.body;
+
+                }, (response) => {
                 });
-                
-                
-
-                /*if(this.productSearch == '')
-                {
-                    this.products = this.originalProducts;
-                    return;
-                }
-
-                var searchedProducts = [];
-                for(var i = 0; i < this.originalProducts.length; i++)
-                {
-                    var productName = this.originalProducts[i]['name'].toLowerCase();
-                    if(productName.indexOf(this.productSearch.toLowerCase()) >= 0)
-                    {
-                        searchedProducts.push(this.originalProducts[i]);
-                    }
-                }
-
-                this.products = searchedProducts;
-                */
-
 
             },
 
@@ -158,7 +145,6 @@
 
                 if (isCryptoInCart === false) {
                     this.cartCryptos.push(cryptoToAdd);
-                    //this.totalPriceCart += cryptoToAdd.lastCotization
                 }
                 
             },
@@ -179,42 +165,54 @@
 
             setLoaded: function() 
             {
-                this.loaded = true;
-                window.paypal
-                .Buttons({
-                    createOrder: (data, actions) => 
-                    {
-                        return actions.order.create
-                        ({
-                            purchase_units: 
-                            [
-                                {
-                                    description: "ordre",
-                                    amount: {
-                                        currency_code: "USD",
-                                        value: "10"
+
+                if (this.cartCryptos.length == 0) {
+                            this.noCryptos = true;      
+                } else {
+                    window.paypal
+                    .Buttons({
+                        fundingSource: paypal.FUNDING.PAYPAL,
+                        createOrder: (data, actions) => 
+                        {
+                    
+                            return actions.order.create
+                            ({
+                                purchase_units: 
+                                [
+                                    {
+                                        description: "Pagament PayPal Marc's exchange",
+                                        amount: {
+                                            currency_code: "USD",
+                                            value: this.totalPriceCart
+                                        }
                                     }
-                                }
-                            ]
-                        });
-                    },
+                                ]
+                            });
+                        },
             
-                    onApprove: async (data, actions) => 
-                    {
-                        const order = await actions.order.capture();
-                        this.paid = true;
-                        console.log(order);
-                    },
-                    onError: err => 
-                    {
-                        console.log(err);
-                    }
-                })
+                        onApprove: async (data, actions) => 
+                        {
+                            const order = await actions.order.capture();
+                            this.paid = true;
+                            console.log(order);
+                        },
+
+                        onCancel: function() 
+                        {
+                    
+                        },
+
+                        onError: function()  
+                        {                                
+                        
+                        }
+                    })
         
-                .render(this.$refs.paypal);
+                    .render(this.$refs.paypal);
+                }
+            }
         }
     }
-}
 
     
 </script>

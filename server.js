@@ -28,7 +28,34 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.post('/api/searchCrypto', function(req,res) {
+    
+    const searchQuery = req.body.searchQuery;
+    const products = req.body.products;
 
+    var searchedCryptos = [];
+
+    if(searchQuery == '')
+    {
+        searchedCryptos = products;
+    }
+
+    for(var i = 0; i < products.length; i++)
+    {
+        var productName = products[i]['name'].toLowerCase();
+
+        if(productName.indexOf(searchQuery.toLowerCase()) >= 0)
+        {
+            searchedCryptos.push(products[i]);
+        }
+    }
+
+    res.json(searchedCryptos);
+
+});
+
+
+/*
 app.post('/api/searchCryptos', function(req, res) {
     
     const cryptoText = req.body.cryptoText;
@@ -53,6 +80,7 @@ app.post('/api/searchCryptos', function(req, res) {
     res.json(JSON.parse(searchedCryptos));
    
 });
+*/
 
 app.get('/api/products', function(req, res) {
 
