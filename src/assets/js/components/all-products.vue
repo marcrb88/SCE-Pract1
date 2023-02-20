@@ -29,7 +29,7 @@
 
         <div class="form-group">
             <div>
-                <input type="text" class ="form-control-edited" v-model="searchQuery" @input="search">
+                <input type="text" class ="form-control-edited" v-model="searchQuery" v-on:keyup="search">
                 <p>{{ searchResults }}</p>
             </div>
 
@@ -126,10 +126,12 @@
             {
                 this.$http.post('http://localhost:3000/api/searchCrypto' , {
                     searchQuery: this.searchQuery,
-                    products: this.products
+                    products: this.products,
+                    originalProducts: this.originalProducts 
 
                 }).then((response) => {
                     this.products = response.body;
+                    console.log(this.products)
 
                 }, (response) => {
                 });
