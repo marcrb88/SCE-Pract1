@@ -30,10 +30,9 @@
         <div class="form-group">
             <div>
                 <input type="text" class ="form-control-edited" v-model="searchQuery" v-on:keyup="search">
-                <p>{{ searchResults }}</p>
+                <button style="margin-left: 20px;" @click="search">Search</button>
             </div>
 
-           <!--<button style="margin-left: 20px;" @click="searchCryptos">Search</button> -->
         </div>
 
         <table class="table table-hover">
@@ -78,6 +77,13 @@
                 noCryptos: false
             }
         },
+        mounted() {
+            console.log("hola")
+            setInterval(() => {
+                this.newCotization;
+            }, 5000);
+            
+        },
 
         computed: {
             totalPriceCart() {
@@ -120,6 +126,20 @@
                     this.cryptoSort();
                 }, (response) => {
                 });
+            },
+
+            newCotization: function()
+            {   
+                console.log("hola")
+                this.$http.get('http://localhost:3000/api/newCotization' , {
+                    products: this.products,
+
+                }).then((response) => {
+                    this.products = response.body;
+
+                }, (response) => {
+                });
+
             },
 
             search: function()

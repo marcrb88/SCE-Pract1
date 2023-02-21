@@ -54,38 +54,22 @@ app.post('/api/searchCrypto', function(req,res) {
         
     }
    
-
     returnProducts ? res.json(originalProducts) : res.json(products);
 
 });
 
 
-/*
-app.post('/api/searchCryptos', function(req, res) {
+app.get('/api/newCotization', function(req,res) { 
     
-    const cryptoText = req.body.cryptoText;
-    const originalProducts = JSON.parse(req.body.originalProducts);
+    var products = req.params.products;
 
-    //TODO logica per la busqueda de les cryptos
-    if(cryptoText == '')
-    {
-        return;
-    }
+    for (var i = 0; i < products.length; i++)
+        products[i].lastCotization = Math.floor(Math.random() * 256);
+    
+    res.json(products);
 
-    var searchedCryptos = [];
-    for(var i = 0; i < originalProducts.length; i++)
-    {
-        var productName = originalProducts[i]['name'].toLowerCase();
-        if(productName.indexOf(cryptoText.toLowerCase()) >= 0)
-        {
-            searchedCryptos.push(originalProducts[i]);
-        }
-    }
 
-    res.json(JSON.parse(searchedCryptos));
-   
 });
-*/
 
 app.get('/api/products', function(req, res) {
 
