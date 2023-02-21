@@ -31,7 +31,6 @@ app.use(function(req, res, next) {
 app.post('/api/searchCrypto', function(req,res) {
     
     const searchQuery = req.body.searchQuery;
-    const products = req.body.products;
     const originalProducts = req.body.originalProducts;
 
     var returnProducts = false;
@@ -54,14 +53,14 @@ app.post('/api/searchCrypto', function(req,res) {
         
     }
    
-    returnProducts ? res.json(originalProducts) : res.json(products);
+    returnProducts ? res.json(originalProducts) : res.json(searchedCryptos);
 
 });
 
 
-app.get('/api/newCotization', function(req,res) { 
+app.post('/api/newCotization', function(req,res) { 
     
-    var products = req.params.products;
+    const products = req.body.products
 
     for (var i = 0; i < products.length; i++)
         products[i].lastCotization = Math.floor(Math.random() * 256);

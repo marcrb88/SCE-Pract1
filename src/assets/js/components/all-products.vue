@@ -49,10 +49,6 @@
                     </div>
                     <br>
                     <br>
-                    <td>
-                        <router-link :to="{name: 'edit_product', params: { id: product.id }}" class="btn btn-primary">Edit</router-link>
-                        <router-link :to="{name: 'delete_product', params: { id: product.id }}" class="btn btn-danger">Delete</router-link>
-                    </td>
                 </tr>
             </tbody>
         </table>
@@ -60,9 +56,6 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import $ from 'jquery'; 
-
 
     export default{  
         data(){
@@ -80,8 +73,8 @@
         mounted() {
             console.log("hola")
             setInterval(() => {
-                this.newCotization;
-            }, 5000);
+                this.newCotization();
+            }, 300000);
             
         },
 
@@ -130,11 +123,10 @@
 
             newCotization: function()
             {   
-                console.log("hola")
-                this.$http.get('http://localhost:3000/api/newCotization' , {
-                    products: this.products,
-
-                }).then((response) => {
+                this.$http.post('http://localhost:3000/api/newCotization', {
+                    products: this.products
+                })
+                .then((response) => {
                     this.products = response.body;
 
                 }, (response) => {
@@ -146,12 +138,10 @@
             {
                 this.$http.post('http://localhost:3000/api/searchCrypto' , {
                     searchQuery: this.searchQuery,
-                    products: this.products,
                     originalProducts: this.originalProducts 
 
                 }).then((response) => {
                     this.products = response.body;
-                    console.log(this.products)
 
                 }, (response) => {
                 });
