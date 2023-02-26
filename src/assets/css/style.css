@@ -29,3 +29,28 @@ body
     border-radius: 4px;
         
 }
+
+.modal {
+    position: fixed; /* posición fija */
+    z-index: 1; /* ubicación en la pila */
+    left: 0;
+    top: 0;
+    width: 100%; /* ancho del modal */
+    height: 100%; /* alto del modal */
+    background-color: rgba(0, 0, 0, 0.4); /* color de fondo oscuro */
+  }
+
+  .modal-content {
+    background-color: #fefefe; /* color de fondo */
+    margin: 15% auto; /* margen superior e inferior, centrado horizontalmente */
+    padding: 20px;
+    border: 1px solid #888; /* borde */
+    width: 80%; /* ancho del contenido del modal */
+  }
+
+  .close {
+    color: #aaa; /* color de texto */
+    float: right; /* alineación a la derecha */
+    font-size: 28px;
+    font-weight: bold;
+  }

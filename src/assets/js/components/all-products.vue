@@ -5,8 +5,18 @@
         </div>
         <div class="flex">
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
-            <div>
-                <div><button class="btn btn-primary" data-toggle="modal" data-target="#cartModal">Cart ({{totalItems}})</button></div>
+                <div>
+                    <button class= "buttonCart" @click="showModal = true">Cart</button>
+                    {{ showModal }}
+                <div>
+                    <div class="modal" v-if="showModal">
+                        <div class="modal-content">
+                            <span class="close" @click="showModal = false">&times;</span>
+                            <p>Este es el contenido del modal.</p>
+                        </div>
+                    </div>
+                </div>
+
                     <ul>
                         <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
                         <li v-for="(product,index) in cartCryptos">
@@ -15,14 +25,14 @@
                         <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
                         </li>
                         <p>Total price shopping cart:{{ totalPriceCart }} </p>
-                        <button v-on:click="payMethod">PAY</button>
+                        <button v-on:click="payMethod">PAY</button> 
                         <div ref="paypal"></div>
                         <div v-if="this.paid == true">PAYMENT DONE!!!</div>
                         <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
                         
                         
                     </ul>
-            </div>
+                </div>
             
         </div>
         
@@ -67,11 +77,11 @@
                 cartCryptos: [],
                 total: 0,
                 paid: 'true',
-                noCryptos: false
+                noCryptos: false,
+                showModal: false
             }
         },
         mounted() {
-            console.log("hola")
             setInterval(() => {
                 this.newCotization();
             }, 300000);
@@ -95,7 +105,7 @@
         },
 
         methods: {
-          
+
             cryptoSort: function() 
             {   
                 if (this.sort == 'ASC') {
@@ -173,6 +183,7 @@
                 "https://www.paypal.com/sdk/js?client-id=AVi6atpIdc8eTHpjntEJ0iME42OOwC6LUiXaHgqPnUTntMx4rEy4QZEsq8cWybvql7HB-BS2y6yw_taK";
                 script.addEventListener("load", this.setLoaded);
                 document.body.appendChild(script);
+                
             },
 
             setLoaded: function() 
@@ -181,7 +192,7 @@
                 if (this.cartCryptos.length == 0) {
                             this.noCryptos = true;      
                 } else {
-                    window.paypal
+                   window.paypal
                     .Buttons({
                         fundingSource: paypal.FUNDING.PAYPAL,
                         createOrder: (data, actions) => 
@@ -206,7 +217,13 @@
                         {
                             const order = await actions.order.capture();
                             this.paid = true;
-                            console.log(order);
+                            //console.log(order);
+
+                            this.$router.push({
+                                name: 'payment_summary',
+                                params: { order: JSON.stringify(order) }
+                            })
+
                         },
 
                         onCancel: function() 
@@ -219,8 +236,8 @@
                         
                         }
                     })
-        
                     .render(this.$refs.paypal);
+                    
                 }
             }
         }

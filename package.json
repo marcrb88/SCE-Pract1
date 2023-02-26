@@ -8,6 +8,7 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "@paypal/checkout-components": "^5.0.255",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-js": "^5.1.4",
     "@paypal/react-paypal-js": "^7.8.2",

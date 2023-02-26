@@ -28,6 +28,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+
 app.post('/api/searchCrypto', function(req,res) {
     
     const searchQuery = req.body.searchQuery;
