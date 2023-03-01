@@ -5,9 +5,9 @@
         </div>
         <div class="flex">
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
-                <div>
-                    <button class= "buttonCart" @click="showModal = true">Cart</button>
-                    {{ showModal }}
+            <div>
+                <button class="buttonCart" @click="showModal = true">Cart</button>
+                {{ showModal }}
                 <div>
                     <div class="modal" v-if="showModal">
                         <div class="modal-content">
@@ -17,29 +17,29 @@
                     </div>
                 </div>
 
-                    <ul>
-                        <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
-                        <li v-for="(product,index) in cartCryptos">
+                <ul>
+                    <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
+                    <li v-for="(product, index) in cartCryptos">
                         <h3>{{ product.name }}</h3>
                         <p>{{ product.description }}</p>
                         <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
-                        </li>
-                        <p>Total price shopping cart:{{ totalPriceCart }} </p>
-                        <button v-on:click="payMethod">PAY</button> 
-                        <div ref="paypal"></div>
-                        <div v-if="this.paid == true">PAYMENT DONE!!!</div>
-                        <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
-                        
-                        
-                    </ul>
-                </div>
-            
+                    </li>
+                    <p>Total price shopping cart:{{ totalPriceCart }} </p>
+                    <button v-on:click="payMethod">PAY</button>
+                    <div ref="paypal"></div>
+                    <div v-if="this.paid == true">PAYMENT DONE!!!</div>
+                    <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
+
+
+                </ul>
+            </div>
+
         </div>
-        
+
 
         <div class="form-group">
             <div>
-                <input type="text" class ="form-control-edited" v-model="searchQuery" v-on:keyup="search">
+                <input type="text" class="form-control-edited" v-model="searchQuery" v-on:keyup="search">
                 <button style="margin-left: 20px;" @click="search">Search</button>
             </div>
 
@@ -51,10 +51,10 @@
                     {{ product.name }}
                     <br>
                     {{ product.description }}
-                    
+
                     <div>
                         Preu historic:<br>
-                        {{ product.lastCotization }}  
+                        {{ product.lastCotization }}
                         <button @click="addToCart(product)" id="cart" class="btn btn-primary">Add to Cart</button>
                     </div>
                     <br>
@@ -67,154 +67,137 @@
 
 <script>
 
-    export default{  
-        data(){
-            return{
-                products: [],
-                originalProducts: [],
-                sort: 'ASC',
-                searchResults: [],
-                cartCryptos: [],
-                total: 0,
-                paid: 'true',
-                noCryptos: false,
-                showModal: false
+export default {
+    data() {
+        return {
+            products: [],
+            originalProducts: [],
+            sort: 'ASC',
+            searchResults: [],
+            cartCryptos: [],
+            total: 0,
+            paid: 'true',
+            noCryptos: false,
+            showModal: false
+        }
+    },
+    mounted() {
+        setInterval(() => {
+            this.newCotization();
+        }, 300000);
+
+    },
+
+    fetchProductData: function () {
+        this.$http.get('http://localhost:3000/api/products').then((response) => {
+            this.products = response.body;
+            this.originalProducts = this.products;
+            this.cryptoSort();
+        }, (response) => {
+        });
+    },
+
+    methods: {
+
+        cryptoSort: function () {
+            if (this.sort == 'ASC') {
+                this.products.sort((a, b) => a.lastCotization - b.lastCotization)
+                this.sort = 'DESC'
+
+            } else {
+                this.products.sort((a, b) => b.lastCotization - a.lastCotization)
+                this.sort = 'ASC'
             }
-        },
-        mounted() {
-            setInterval(() => {
-                this.newCotization();
-            }, 300000);
-            
+
+            this.$router.replace('/')
+
         },
 
-        computed: {
-            totalPriceCart() {
-                this.total = 0;
-                this.cartCryptos.forEach(item => 
-                {
-                    let parsedCotization = parseInt(item.lastCotization)
-                    this.total += parsedCotization;
-                });
-                return this.total;
-            },
-        },
-            created: function()
-        {
-            this.fetchProductData();
+        fetchProductData: function () {
+            this.$http.get('http://localhost:3000/api/products').then((response) => {
+                this.products = response.body;
+                this.originalProducts = this.products;
+                this.cryptoSort();
+            }, (response) => {
+            });
         },
 
-        methods: {
-
-            cryptoSort: function() 
-            {   
-                if (this.sort == 'ASC') {
-                    this.products.sort((a, b) => a.lastCotization - b.lastCotization)
-                    this.sort = 'DESC'
-                
-                } else {
-                    this.products.sort((a, b) => b.lastCotization - a.lastCotization)
-                    this.sort = 'ASC'
-                }
-    
-                this.$router.replace('/')
-            
-            },
-
-            fetchProductData: function()
-            {
-                this.$http.get('http://localhost:3000/api/products').then((response) => {
-                    this.products = response.body;
-                    this.originalProducts = this.products;
-                    this.cryptoSort();
-                }, (response) => {
-                });
-            },
-
-            newCotization: function()
-            {   
-                this.$http.post('http://localhost:3000/api/newCotization', {
-                    products: this.products
-                })
+        newCotization: function () {
+            this.$http.post('http://localhost:3000/api/newCotization', {
+                products: this.products
+            })
                 .then((response) => {
                     this.products = response.body;
 
                 }, (response) => {
                 });
 
-            },
+        },
 
-            search: function()
-            {
-                this.$http.post('http://localhost:3000/api/searchCrypto' , {
-                    searchQuery: this.searchQuery,
-                    originalProducts: this.originalProducts 
+        search: function () {
+            this.$http.post('http://localhost:3000/api/searchCrypto', {
+                searchQuery: this.searchQuery,
+                originalProducts: this.originalProducts
 
-                }).then((response) => {
-                    this.products = response.body;
+            }).then((response) => {
+                this.products = response.body;
 
-                }, (response) => {
-                });
+            }, (response) => {
+            });
 
-            },
+        },
 
-            addToCart: function(cryptoToAdd)
-            {
-                // Add the item
-			    let cryptoInCart = this.cartCryptos.filter(product => product.name === cryptoToAdd.name);
-                
-			    let isCryptoInCart = cryptoInCart.length > 0;
+        addToCart: function (cryptoToAdd) {
+            // Add the item
+            let cryptoInCart = this.cartCryptos.filter(product => product.name === cryptoToAdd.name);
 
-                if (isCryptoInCart === false) {
-                    this.cartCryptos.push(cryptoToAdd);
-                }
-                
-            },
+            let isCryptoInCart = cryptoInCart.length > 0;
 
-            removeItem: function(index)
-            {
-                this.cartCryptos.splice(index, 1);
-            },
+            if (isCryptoInCart === false) {
+                this.cartCryptos.push(cryptoToAdd);
+            }
 
-            payMethod: function()
-            {
-                const script = document.createElement("script");
-                script.src =
+        },
+
+        removeItem: function (index) {
+            this.cartCryptos.splice(index, 1);
+        },
+
+        payMethod: function () {
+            const script = document.createElement("script");
+            script.src =
                 "https://www.paypal.com/sdk/js?client-id=AVi6atpIdc8eTHpjntEJ0iME42OOwC6LUiXaHgqPnUTntMx4rEy4QZEsq8cWybvql7HB-BS2y6yw_taK";
-                script.addEventListener("load", this.setLoaded);
-                document.body.appendChild(script);
-                
-            },
+            script.addEventListener("load", this.setLoaded);
+            document.body.appendChild(script);
 
-            setLoaded: function() 
-            {
+        },
 
-                if (this.cartCryptos.length == 0) {
-                            this.noCryptos = true;      
-                } else {
-                   window.paypal
+        setLoaded: function () {
+
+            if (this.cartCryptos.length == 0) {
+                this.noCryptos = true;
+            } else {
+                window.paypal
                     .Buttons({
                         fundingSource: paypal.FUNDING.PAYPAL,
-                        createOrder: (data, actions) => 
-                        {
-                    
+                        createOrder: (data, actions) => {
+
                             return actions.order.create
-                            ({
-                                purchase_units: 
-                                [
-                                    {
-                                        description: "Pagament PayPal Marc's exchange",
-                                        amount: {
-                                            currency_code: "USD",
-                                            value: this.totalPriceCart
-                                        }
-                                    }
-                                ]
-                            });
+                                ({
+                                    purchase_units:
+                                        [
+                                            {
+                                                description: "Pagament PayPal Marc's exchange",
+                                                amount: {
+                                                    currency_code: "USD",
+                                                    value: this.totalPriceCart
+                                                }
+                                            }
+                                        ]
+                                });
                         },
-            
-                        onApprove: async (data, actions) => 
-                        {
+
+                        onApprove: async (data, actions) => {
                             const order = await actions.order.capture();
                             this.paid = true;
                             //console.log(order);
@@ -226,22 +209,18 @@
 
                         },
 
-                        onCancel: function() 
-                        {
-                    
+                        onCancel: function () {
+
                         },
 
-                        onError: function()  
-                        {                                
-                        
+                        onError: function () {
+
                         }
                     })
                     .render(this.$refs.paypal);
-                    
-                }
+
             }
         }
     }
-
-    
+}
 </script>
