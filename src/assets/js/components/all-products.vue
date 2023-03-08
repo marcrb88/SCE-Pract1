@@ -6,16 +6,34 @@
         <div class="flex">
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
             <div>
-                <button class="buttonCart" @click="showModal = true">Cart</button>
-                {{ showModal }}
-                <div>
-                    <div class="modal" v-if="showModal">
-                        <div class="modal-content">
-                            <span class="close" @click="showModal = false">&times;</span>
-                            <p>Este es el contenido del modal.</p>
+                <template>
+                    <div>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                            Launch demo modal
+                        </button>
+                        <div id="exampleModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" style="display:block">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Modal body text goes here.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </template>
+
 
                 <ul>
                     <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
