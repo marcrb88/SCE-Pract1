@@ -7,45 +7,38 @@
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
             <div>
                 <div>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                        Launch demo modal
+                    <button @click="showModal=true" type="button" class="btn btn-primary">
+                        Cart
                     </button>
-                    <div id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    <div v-if ="showModal == true" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                         style="display:block">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <button @click="showModal = false" type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Modal body text goes here.</p>
+                                    <li v-for="(product, index) in cartCryptos">
+                                        <h3>{{ product.name }}</h3>
+                                        <p>{{ product.description }}</p>
+                                        <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
+                                        <p>Total price shopping cart:{{ totalPriceCart }} </p>
+                                    </li>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                    <button @click="showModal=false" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button v-on:click="payMethod" type="button" class="btn btn-primary">Save changes</button>
+                                    <div ref="paypal"></div>
+                                            <div v-if="this.paid == true">PAYMENT DONE!!!</div>
+                                            <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <ul>
-                    <h4>productes del carrito: (//TODO marcbb un bon frontend)</h4>
-                    <li v-for="(product, index) in cartCryptos">
-                        <h3>{{ product.name }}</h3>
-                        <p>{{ product.description }}</p>
-                        <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
-                    </li>
-                    <p>Total price shopping cart:{{ totalPriceCart }} </p>
-                    <button v-on:click="payMethod">PAY</button>
-                    <div ref="paypal"></div>
-                    <div v-if="this.paid == true">PAYMENT DONE!!!</div>
-                    <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
-
-
-                </ul>
             </div>
 
         </div>
