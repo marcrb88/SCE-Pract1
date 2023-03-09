@@ -1,5 +1,6 @@
 import Vue from 'vue'
 
+
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
@@ -17,11 +18,6 @@ const routes = [
         name: 'all_products',
         path: '/',
         component: AllProducts
-    },
-    {
-        name: 'payment_summary',
-        path: '/payment-summary',
-        component: paymentSummary
     }
 ];
 var router = new VueRouter({ routes: routes, mode: 'history' });

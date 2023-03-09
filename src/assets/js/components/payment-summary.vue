@@ -21,10 +21,11 @@
                 order:''
             }
         },
-        mounted() {
-            const order= this.$route.params.order;
-            this.order = JSON.parse(order);
-
+        props: {
+            order: {
+                type: JSON,
+                required: true
+            }
         }
 }
 

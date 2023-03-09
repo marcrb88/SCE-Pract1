@@ -7,16 +7,17 @@
             <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
             <div>
                 <div>
-                    <button @click="showModal=true" type="button" class="btn btn-primary">
+                    <button @click="showModal = true" type="button" class="btn btn-primary">
                         Cart
                     </button>
-                    <div v-if ="showModal == true" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                        style="display:block">
+                    <div v-if="showModal == true" id="exampleModal" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" style="display:block">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                    <button @click="showModal = false" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <button @click="showModal = false" type="button" class="close" data-dismiss="modal"
+                                        aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -24,16 +25,19 @@
                                     <li v-for="(product, index) in cartCryptos">
                                         <h3>{{ product.name }}</h3>
                                         <p>{{ product.description }}</p>
-                                        <button @click="removeItem(index)"><span class="glyphicon glyphicon-trash"></span></button>
+                                        <button @click="removeItem(index)"><span
+                                                class="glyphicon glyphicon-trash"></span></button>
                                         <p>Total price shopping cart:{{ totalPriceCart }} </p>
                                     </li>
                                 </div>
                                 <div class="modal-footer">
-                                    <button @click="showModal=false" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button v-on:click="payMethod" type="button" class="btn btn-primary">Save changes</button>
-                                    <div ref="paypal"></div>
+                                    <button @click="showModal = false" type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Close</button>
+                                    <button @click="payMethod" type="button" class="btn btn-primary">Save changes</button>
+
+                                    <!---<div ref="paypal"></div>
                                             <div v-if="this.paid == true">PAYMENT DONE!!!</div>
-                                            <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div>
+                                            <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div> -->
                                 </div>
                             </div>
                         </div>
@@ -50,6 +54,18 @@
                 <button style="margin-left: 20px;" @click="search">Search</button>
             </div>
 
+        </div>
+
+        <div>
+            <h1 v-if="paymentData">Successful transaction</h1>
+            <p v-if="paymentData"> Payment id: {{ paymentData.id }}</p>
+            <p v-if="paymentData">Payer email: {{ paymentData.email }}</p>
+            <p v-if="paymentData"> Payer first name: {{ paymentData.payerFirstName }}</p>
+            <p v-if="paymentData"> Payer last name: {{ paymentData.payerLastName }}</p>
+            <p v-if="paymentData">Payer id: {{ paymentData.payerId }}</p>
+            <p v-if="paymentData">Amount: {{ paymentData.amount }}</p>
+            <p v-if="paymentData">Currency: {{ paymentData.currency }}</p>
+            <p v-if="paymentData">Create time: {{ paymentData.createTime}}</p>
         </div>
 
         <table class="table table-hover">
@@ -73,6 +89,7 @@
 </template>
 
 <script>
+import PaymentSummary from './payment-summary.vue';
 
 export default {
     data() {
@@ -85,8 +102,12 @@ export default {
             total: 0,
             paid: 'true',
             noCryptos: false,
-            showModal: false
+            showModal: false,
+            paymentData: null
         }
+    },
+    components: {
+        PaymentSummary
     },
     mounted() {
         setInterval(() => {
@@ -94,6 +115,15 @@ export default {
         }, 300000);
 
     },
+
+    mounted() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const paymentDataString = queryParams.get('paymentData');
+    console.log(paymentDataString)
+    if (paymentDataString) {
+      this.paymentData = JSON.parse(paymentDataString);
+    }
+  },
 
     computed: {
         totalPriceCart() {
@@ -176,6 +206,18 @@ export default {
         },
 
         payMethod: function () {
+
+            this.$http.get(`http://localhost:3000/api/createPayment?price=${this.totalPriceCart}`)
+                .then((response) => {
+                    console.log("payment done")
+                    window.location.href = response.data.redirectUrl;
+
+                }, (response) => {
+                });
+        }
+
+
+        /*payMethod: function () {
             const script = document.createElement("script");
             script.src =
                 "https://www.paypal.com/sdk/js?client-id=AVi6atpIdc8eTHpjntEJ0iME42OOwC6LUiXaHgqPnUTntMx4rEy4QZEsq8cWybvql7HB-BS2y6yw_taK";
@@ -232,7 +274,7 @@ export default {
                     .render(this.$refs.paypal);
 
             }
-        }
+        }*/
     }
 }
 
