@@ -3,57 +3,90 @@
         <div>
             <h1>All Products</h1>
         </div>
-        <div class="flex">
-            <button style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
-            <div>
-                <div>
-                    <button @click="showModal = true" type="button" class="btn btn-primary">
-                        Cart
-                    </button>
-                    <div v-if="showModal == true" id="exampleModal" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" style="display:block">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                    <button @click="showModal = false" type="button" class="close" data-dismiss="modal"
-                                        aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <li v-for="(product, index) in cartCryptos">
-                                        <h3>{{ product.name }}</h3>
-                                        <p>{{ product.description }}</p>
-                                        <button @click="removeItem(index)"><span
-                                                class="glyphicon glyphicon-trash"></span></button>
-                                        <p>Total price shopping cart:{{ totalPriceCart }} </p>
-                                    </li>
-                                </div>
-                                <div class="modal-footer">
-                                    <button @click="showModal = false" type="button" class="btn btn-secondary"
-                                        data-dismiss="modal">Close</button>
-                                    <button @click="payMethod" type="button" class="btn btn-primary">Save changes</button>
 
-                                    <!---<div ref="paypal"></div>
-                                            <div v-if="this.paid == true">PAYMENT DONE!!!</div>
-                                            <div v-if="this.noCryptos == true">THERE AREN'T CRYPTOS IN THE SHOPPING CART!!!</div> -->
+        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Cart ({{ cartCryptos.length }})
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Shopping Cart</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr v-for="(product, index) in cartCryptos">
+                                            <td>
+                                                <img :src="product.image" width='32' height='32'>
+                                            </td>
+                                            <td>
+                                                <p>{{ product.name }}</p>
+                                                <p style="font-size: small;">{{ product.description }}</p>
+                                            </td>
+                                            <td>
+                                                <p>€{{ product.lastQuote }}</p>
+                                            </td>
+                                            <td>
+                                                <button @click="removeItem(index)" style="border: 0;">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr v-show="cartCryptos.length === 0">
+                                            <td colspan="4" class="text-center">Cart is empty</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-6">Total ({{ cartCryptos.length }})</div>
+                                    <div class="col-sm-6">€{{ totalPriceCart }}</div>
                                 </div>
+                                <br>
+                                <button type="button" class="btn btn-primary w-100 btn-block"
+                                    @click="payMethod">Checkout</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
+        <div class="form-group mb-3">
+            <input type="text" class="form-control-edited" placeholder="Search cryptocoins" v-model="searchQuery">
+            <button class="btn btn-secondary" style="margin-left: 20px;" @click="search">Search</button>
+        </div>
 
-        <div class="form-group">
-            <div>
-                <input type="text" class="form-control-edited" v-model="searchQuery" v-on:keyup="search">
-                <button style="margin-left: 20px;" @click="search">Search</button>
+        <!-- Product List -->
+        <button class="btn btn-secondary" style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
+        <div class="grid-container">
+            <div v-for="(product, index) in products" :key="index" class="grid-item">
+                <div style="height: 60%;">
+                    <div>
+                        <img :src="product.image" width='64' height='64'><b><span
+                                style="font-size: 24px; padding-left:15px;">{{ product.name }}</span></b>
+                    </div><br>
+                    <p>{{ product.description }}</p>
+                </div>
+                <hr>
+                <h3><b>Price History</b></h3>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <p>€{{ product.lastQuote }} <span style="font-size: 12px; vertical-align: middle;">{{
+                            product.lastQuoteTime }}</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <button @click="addToCart(product)" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                </div>
             </div>
-
         </div>
 
         <div>
@@ -65,26 +98,8 @@
             <p v-if="paymentData">Payer id: {{ paymentData.payerId }}</p>
             <p v-if="paymentData">Amount: {{ paymentData.amount }}</p>
             <p v-if="paymentData">Currency: {{ paymentData.currency }}</p>
-            <p v-if="paymentData">Create time: {{ paymentData.createTime}}</p>
+            <p v-if="paymentData">Create time: {{ paymentData.createTime }}</p>
         </div>
-
-        <table class="table table-hover">
-            <tbody>
-                <tr v-for="product in products">
-                    {{ product.name }}
-                    <br>
-                    {{ product.description }}
-
-                    <div>
-                        Preu historic:<br>
-                        {{ product.lastCotization }}
-                        <button @click="addToCart(product)" id="cart" class="btn btn-primary">Add to Cart</button>
-                    </div>
-                    <br>
-                    <br>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </template>
 
@@ -96,10 +111,8 @@ export default {
         return {
             products: [],
             originalProducts: [],
-            sort: 'ASC',
-            searchResults: [],
+            sort: 'DESC',
             cartCryptos: [],
-            total: 0,
             paid: 'true',
             noCryptos: false,
             showModal: false,
@@ -117,22 +130,22 @@ export default {
     },
 
     mounted() {
-    const queryParams = new URLSearchParams(window.location.search);
-    const paymentDataString = queryParams.get('paymentData');
-    console.log(paymentDataString)
-    if (paymentDataString) {
-      this.paymentData = JSON.parse(paymentDataString);
-    }
-  },
+        const queryParams = new URLSearchParams(window.location.search);
+        const paymentDataString = queryParams.get('paymentData');
+        console.log(paymentDataString)
+        if (paymentDataString) {
+            this.paymentData = JSON.parse(paymentDataString);
+        }
+    },
+
 
     computed: {
         totalPriceCart() {
-            this.total = 0;
+            let total = 0;
             this.cartCryptos.forEach(item => {
-                let parsedCotization = parseInt(item.lastCotization)
-                this.total += parsedCotization;
+                total += item.lastQuote;
             });
-            return this.total;
+            return total.toFixed(2);
         },
     },
     created: function () {
@@ -143,16 +156,13 @@ export default {
 
         cryptoSort: function () {
             if (this.sort == 'ASC') {
-                this.products.sort((a, b) => a.lastCotization - b.lastCotization)
+                this.products.sort((a, b) => a.lastQuote - b.lastQuote)
                 this.sort = 'DESC'
 
             } else {
-                this.products.sort((a, b) => b.lastCotization - a.lastCotization)
+                this.products.sort((a, b) => b.lastQuote - a.lastQuote)
                 this.sort = 'ASC'
             }
-
-            this.$router.replace('/')
-
         },
 
         fetchProductData: function () {
@@ -160,20 +170,15 @@ export default {
                 this.products = response.body;
                 this.originalProducts = this.products;
                 this.cryptoSort();
-            }, (response) => {
             });
         },
 
         newCotization: function () {
             this.$http.post('http://localhost:3000/api/newCotization', {
                 products: this.products
-            })
-                .then((response) => {
-                    this.products = response.body;
-
-                }, (response) => {
-                });
-
+            }).then((response) => {
+                this.products = response.body;
+            });
         },
 
         search: function () {
@@ -183,22 +188,14 @@ export default {
 
             }).then((response) => {
                 this.products = response.body;
-
-            }, (response) => {
             });
-
         },
 
         addToCart: function (cryptoToAdd) {
-            // Add the item
             let cryptoInCart = this.cartCryptos.filter(product => product.name === cryptoToAdd.name);
-
-            let isCryptoInCart = cryptoInCart.length > 0;
-
-            if (isCryptoInCart === false) {
+            if (cryptoInCart.length == 0) {
                 this.cartCryptos.push(cryptoToAdd);
             }
-
         },
 
         removeItem: function (index) {
@@ -211,8 +208,6 @@ export default {
                 .then((response) => {
                     console.log("payment done")
                     window.location.href = response.data.redirectUrl;
-
-                }, (response) => {
                 });
         }
 

@@ -1,19 +1,25 @@
 [
     {
         "name": "etherium",
-        "description": "aquesta moneda es l'etherium...",
-        "lastCotization": "20"
+        "description": "S'utilitza principalment per pagar comissions de transacció i la creació de contractes intel·ligents de blockchain",
+        "lastQuote": 1170.9,
+        "lastQuoteTime": "13:00",
+        "image": "https://cryptologos.cc/logos/ethereum-eth-logo.png"
     },
     {
         "name": "bitcoin",
-        "description": "aquesta moneda es el bitcoin...",
-        "lastCotization": "30"
+        "description": "S'utilitza per adquirir productes i serveis",
+        "lastQuote": 16135.36,
+        "lastQuoteTime": "21:00",
+        "image": "https://cryptologos.cc/logos/bitcoin-btc-logo.png"
     },
 
     {
         "name": "calçot",
-        "description": "aquesta moneda es el calçot...",
-        "lastCotization": "15"
+        "description": "Els millors a Riudecols",
+        "lastQuote": 1,
+        "lastQuoteTime": "16:16",
+        "image": "https://cryptologos.cc/logos/tether-usdt-logo.png"
     }
 
 ]
