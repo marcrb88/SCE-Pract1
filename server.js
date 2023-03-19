@@ -55,7 +55,7 @@ app.get('/api/createPayment', function (req, res) {
             "description": "Compra en línea"
         }],
         "redirect_urls": {
-            "return_url": "http://localhost:3000/success",
+            "return_url": "http://localhost:3000/process",
             "cancel_url": "http://localhost:3000/cancel"
         }
     };
@@ -63,7 +63,7 @@ app.get('/api/createPayment', function (req, res) {
     paypal.payment.create(paymentData, (error, payment) => {
         if (error) {
             console.error(error);
-            res.status(500).send('Error al crear el pago');
+            res.status(500).send('Error al crear el pagament');
         } else {
             const redirectUrl = payment.links.find((link) => link.rel === 'approval_url').href;
             res.send({ redirectUrl });
@@ -72,7 +72,7 @@ app.get('/api/createPayment', function (req, res) {
 });
 
 
-app.get('/success', function (req, res) {
+app.get('/process', function (req, res) {
     const paymentId = req.query.paymentId;
 
     paypal.payment.get(paymentId, function (error, payment) {
@@ -82,61 +82,67 @@ app.get('/success', function (req, res) {
             console.log(payment);
 
             const paymentData = {
-                id : payment.id,
-                payerEmail : payment.payer.payer_info.email,
-                payerFirstName : payment.payer.payer_info.first_name,
-                payerLastName : payment.payer.payer_info.last_name,
-                payerId : payment.payer.payer_info.payer_id,
-                amount : payment.transactions[0].amount.total,
-                currency : payment.transactions[0].amount.currency,
-                createTime : payment.create_time
+                id: payment.id,
+                payerEmail: payment.payer.payer_info.email,
+                payerFirstName: payment.payer.payer_info.first_name,
+                payerLastName: payment.payer.payer_info.last_name,
+                payerId: payment.payer.payer_info.payer_id,
+                amount: payment.transactions[0].amount.total,
+                currency: payment.transactions[0].amount.currency,
+                createTime: payment.create_time
 
-              };
+            };
 
             res.redirect(`http://localhost:8080?paymentData=${JSON.stringify(paymentData)}`);
         }
     });
 });
 
-
-
-app.post('/api/searchCrypto', function (req, res) {
-
-    const searchQuery = req.body.searchQuery;
-    const originalProducts = req.body.originalProducts;
-
-    var returnProducts = false;
-
-    if (searchQuery == '')
-        returnProducts = true;
-
-    else {
-        var searchedCryptos = [];
-        for (var i = 0; i < originalProducts.length; i++) {
-            var productName = originalProducts[i]['name'].toLowerCase();
-
-            if (productName.indexOf(searchQuery.toLowerCase()) >= 0) {
-                searchedCryptos.push(originalProducts[i]);
-            }
-        }
-
-    }
-
-    returnProducts ? res.json(originalProducts) : res.json(searchedCryptos);
-
+app.get('/cancel', function (req, res) {
+    res.redirect(`http://localhost:8080`);
 });
 
 
-app.post('/api/newCotization', function (req, res) {
 
-    const products = req.body.products
+app.get('/api/searchCrypto', function (req, res) {
+    fs.readFile(PRODUCTS_FILE, function (err, data) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        var originalProducts = JSON.parse(data);
+        const searchQuery = req.query.searchQuery;
 
-    for (var i = 0; i < products.length; i++)
-        products[i].lastCotization = Math.floor(Math.random() * 256);
+        if (searchQuery == "")
+            res.json(originalProducts)
+        else {
+            var searchedCryptos = [];
+            for (var i = 0; i < originalProducts.length; i++) {
+                var productName = originalProducts[i]['name'].toLowerCase();
 
-    res.json(products);
+                if (productName.startsWith(searchQuery)) {
+                    searchedCryptos.push(originalProducts[i]);
+                }
+            }
+            res.json(searchedCryptos)
+        }
+    });
+});
 
 
+app.get('/api/newCotization', function (req, res) {
+    fs.readFile(PRODUCTS_FILE, function (err, data) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        const products = JSON.parse(data)
+
+        for (var i = 0; i < products.length; i++)
+            products[i].lastQuote = (products[i].lastQuote * Math.random()).toFixed(2);
+
+        res.json(products);
+    });
 });
 
 app.get('/api/products', function (req, res) {

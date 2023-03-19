@@ -59,13 +59,18 @@
             </div>
         </div>
 
-        <div class="form-group mb-3">
-            <input type="text" class="form-control-edited" placeholder="Search cryptocoins" v-model="searchQuery">
+        <div class="form-group mb-3" style="position: relative;">
+            <input type="search" class="form-control-edited" placeholder="Search cryptocoins" v-model="searchQuery"
+                @input="onInput" @focus="onInput" ref="myInput" @focusout="onFocusOut">
+            <div class="autosuggest__results-container" v-if="showSearchedCryptos">
+                <div class="autosuggest__dropdown-item" v-for="(product, index) in searchedCryptos"
+                    @mousedown.prevent="onSelect(index)">{{ product.name }}</div>
+            </div>
             <button class="btn btn-secondary" style="margin-left: 20px;" @click="search">Search</button>
         </div>
 
         <!-- Product List -->
-        <button class="btn btn-secondary" style="margin-bottom: 20px;" @click="cryptoSort">Canviar ordre</button>
+        <button class="btn btn-secondary" style="margin-bottom: 20px;" @click="canviarOdre">Canviar ordre ({{ this.sort }})</button>
         <div class="grid-container">
             <div v-for="(product, index) in products" :key="index" class="grid-item">
                 <div style="height: 60%;">
@@ -92,7 +97,7 @@
         <div>
             <h1 v-if="paymentData">Successful transaction</h1>
             <p v-if="paymentData"> Payment id: {{ paymentData.id }}</p>
-            <p v-if="paymentData">Payer email: {{ paymentData.email }}</p>
+            <p v-if="paymentData">Payer email: {{ paymentData.payerEmail }}</p>
             <p v-if="paymentData"> Payer first name: {{ paymentData.payerFirstName }}</p>
             <p v-if="paymentData"> Payer last name: {{ paymentData.payerLastName }}</p>
             <p v-if="paymentData">Payer id: {{ paymentData.payerId }}</p>
@@ -105,28 +110,22 @@
 
 <script>
 import PaymentSummary from './payment-summary.vue';
+import Swal from 'sweetalert2'
 
 export default {
     data() {
         return {
             products: [],
-            originalProducts: [],
             sort: 'DESC',
             cartCryptos: [],
-            paid: 'true',
-            noCryptos: false,
-            showModal: false,
-            paymentData: null
+            paymentData: null,
+            searchQuery: "",
+            searchedCryptos: [],
+            showSearchedCryptos: false,
         }
     },
     components: {
         PaymentSummary
-    },
-    mounted() {
-        setInterval(() => {
-            this.newCotization();
-        }, 300000);
-
     },
 
     mounted() {
@@ -136,6 +135,10 @@ export default {
         if (paymentDataString) {
             this.paymentData = JSON.parse(paymentDataString);
         }
+
+        setInterval(() => {
+            this.newCotization();
+        }, 300000);
     },
 
 
@@ -154,47 +157,94 @@ export default {
 
     methods: {
 
+        canviarOdre: function () {
+            if (this.sort == 'DESC') {
+                this.sort = 'ASC'
+            } else {
+                this.sort = 'DESC'
+            }
+            this.cryptoSort();
+        },
+
         cryptoSort: function () {
+            console.log(' a vere sort de cryptoSort' + this.sort)
             if (this.sort == 'ASC') {
                 this.products.sort((a, b) => a.lastQuote - b.lastQuote)
-                this.sort = 'DESC'
-
             } else {
                 this.products.sort((a, b) => b.lastQuote - a.lastQuote)
-                this.sort = 'ASC'
             }
         },
 
         fetchProductData: function () {
-            this.$http.get('http://localhost:3000/api/products').then((response) => {
-                this.products = response.body;
-                this.originalProducts = this.products;
-                this.cryptoSort();
-            });
+            this.$http.get('http://localhost:3000/api/products')
+                .then((response) => {
+                    this.products = response.body;
+                    this.cryptoSort();
+                })
+                .catch(error => console.error(error));
         },
 
         newCotization: function () {
-            this.$http.post('http://localhost:3000/api/newCotization', {
-                products: this.products
-            }).then((response) => {
-                this.products = response.body;
-            });
+            fetch(`http://localhost:3000/api/newCotization`)
+                .then(response => response.json())
+                .then(data => {
+                    this.products = data;
+                })
+                .catch(error => console.error(error));
         },
 
-        search: function () {
-            this.$http.post('http://localhost:3000/api/searchCrypto', {
-                searchQuery: this.searchQuery,
-                originalProducts: this.originalProducts
-
-            }).then((response) => {
-                this.products = response.body;
-            });
+        onInput() {
+            fetch(`http://localhost:3000/api/searchCrypto?searchQuery=${this.searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    this.searchedCryptos = data;
+                    if (data.length > 0) {
+                        this.showSearchedCryptos = true
+                    } else {
+                        this.showSearchedCryptos = false
+                    }
+                })
+                .catch(error => console.error(error));
+        },
+        search() {
+            fetch(`http://localhost:3000/api/searchCrypto?searchQuery=${this.searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        this.products = data;
+                        console.log(' a vere sort ' + this.sort)
+                        this.cryptoSort()
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: "No s'ha trobat cap criptomoneda",
+                            showConfirmButton: true,
+                        });
+                    }
+                })
+                .catch(error => console.error(error));
+        },
+        onSelect(index) {
+            this.searchQuery = this.searchedCryptos[index].name
+            this.showSearchedCryptos = false
+        },
+        onFocusOut() {
+            this.showSearchedCryptos = false
         },
 
         addToCart: function (cryptoToAdd) {
             let cryptoInCart = this.cartCryptos.filter(product => product.name === cryptoToAdd.name);
             if (cryptoInCart.length == 0) {
                 this.cartCryptos.push(cryptoToAdd);
+            } else {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: "Moneda ja afegida",
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             }
         },
 
@@ -203,73 +253,21 @@ export default {
         },
 
         payMethod: function () {
-
             this.$http.get(`http://localhost:3000/api/createPayment?price=${this.totalPriceCart}`)
                 .then((response) => {
-                    console.log("payment done")
                     window.location.href = response.data.redirectUrl;
+                })
+                .catch(error => {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: error.data,
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
                 });
         }
-
-
-        /*payMethod: function () {
-            const script = document.createElement("script");
-            script.src =
-                "https://www.paypal.com/sdk/js?client-id=AVi6atpIdc8eTHpjntEJ0iME42OOwC6LUiXaHgqPnUTntMx4rEy4QZEsq8cWybvql7HB-BS2y6yw_taK";
-            script.addEventListener("load", this.setLoaded);
-            document.body.appendChild(script);
-
-        },
-
-        setLoaded: function () {
-
-            if (this.cartCryptos.length == 0) {
-                this.noCryptos = true;
-            } else {
-                window.paypal
-                    .Buttons({
-                        fundingSource: paypal.FUNDING.PAYPAL,
-                        createOrder: (data, actions) => {
-
-                            return actions.order.create
-                                ({
-                                    purchase_units:
-                                        [
-                                            {
-                                                description: "Pagament PayPal Marc's exchange",
-                                                amount: {
-                                                    currency_code: "USD",
-                                                    value: this.totalPriceCart
-                                                }
-                                            }
-                                        ]
-                                });
-                        },
-
-                        onApprove: async (data, actions) => {
-                            const order = await actions.order.capture();
-                            this.paid = true;
-                            //console.log(order);
-
-                            this.$router.push({
-                                name: 'payment_summary',
-                                params: { order: JSON.stringify(order) }
-                            })
-
-                        },
-
-                        onCancel: function () {
-
-                        },
-
-                        onError: function () {
-
-                        }
-                    })
-                    .render(this.$refs.paypal);
-
-            }
-        }*/
     }
 }
 

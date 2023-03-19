@@ -1,5 +1,6 @@
 [
     {
+        "id": 1,
         "name": "etherium",
         "description": "S'utilitza principalment per pagar comissions de transacció i la creació de contractes intel·ligents de blockchain",
         "lastQuote": 1170.9,
@@ -7,19 +8,28 @@
         "image": "https://cryptologos.cc/logos/ethereum-eth-logo.png"
     },
     {
+        "id": 2,
         "name": "bitcoin",
         "description": "S'utilitza per adquirir productes i serveis",
         "lastQuote": 16135.36,
         "lastQuoteTime": "21:00",
         "image": "https://cryptologos.cc/logos/bitcoin-btc-logo.png"
     },
-
     {
+        "id": 3,
         "name": "calçot",
         "description": "Els millors a Riudecols",
         "lastQuote": 1,
         "lastQuoteTime": "16:16",
         "image": "https://cryptologos.cc/logos/tether-usdt-logo.png"
+    },
+    {
+        "id": 4,
+        "name": "binance",
+        "description": "S'utilitza per adquirir productes i serveis",
+        "lastQuote": 345.7,
+        "lastQuoteTime": "16:50",
+        "image": "https://cryptologos.cc/logos/binance-coin-bnb-logo.png"
     }
 
 ]
