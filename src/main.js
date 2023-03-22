@@ -10,14 +10,14 @@ Vue.use(VueResource);
 
 import App from './App.vue'
 
-const AllProducts = require('./assets/js/components/all-products.vue');
+const AllCryptocurrencies = require('./assets/js/components/all-cryptocurrencies.vue');
 const paymentSummary = require('./assets/js/components/payment-summary.vue');
 
 const routes = [
     {
-        name: 'all_products',
+        name: 'all_cryptocurrencies',
         path: '/',
-        component: AllProducts
+        component: AllCryptocurrencies
     }
 ];
 var router = new VueRouter({ routes: routes, mode: 'history' });

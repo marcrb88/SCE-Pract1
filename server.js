@@ -6,7 +6,7 @@ var app = express();
 const cors = require('cors');
 app.use(cors());
 
-var PRODUCTS_FILE = path.join(__dirname, 'src/assets/js/components/product-data.json');
+var CRYPTOCURRENCIES_FILE = path.join(__dirname, 'src/assets/js/components/cryptocurrency-data.json');
 
 app.set('port', (process.env.PORT || 3000));
 
@@ -105,49 +105,40 @@ app.get('/cancel', function (req, res) {
 
 
 app.get('/api/searchCrypto', function (req, res) {
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
+    fs.readFile(CRYPTOCURRENCIES_FILE, function (err, data) {
         if (err) {
             console.error(err);
             process.exit(1);
         }
-        var originalProducts = JSON.parse(data);
+        var cryptocurrencies = JSON.parse(data);
         const searchQuery = req.query.searchQuery;
 
         if (searchQuery == "")
-            res.json(originalProducts)
+            res.json(cryptocurrencies)
         else {
-            var searchedCryptos = [];
-            for (var i = 0; i < originalProducts.length; i++) {
-                var productName = originalProducts[i]['name'].toLowerCase();
-
-                if (productName.startsWith(searchQuery)) {
-                    searchedCryptos.push(originalProducts[i]);
-                }
-            }
-            res.json(searchedCryptos)
+            res.json(cryptocurrencies.filter(x => x.name.toLowerCase().startsWith(searchQuery)))
         }
     });
 });
 
 
-app.get('/api/newCotization', function (req, res) {
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
+app.post('/api/cryptocurrencies', function (req, res) {
+    fs.readFile(CRYPTOCURRENCIES_FILE, function (err, data) {
         if (err) {
             console.error(err);
-            process.exit(1);
+            console.exit(1);
         }
-        const products = JSON.parse(data)
+        var cryptos = JSON.parse(data);
+        var cryptosShowedIds = req.body.cryptosShowedIds;
 
-        for (var i = 0; i < products.length; i++)
-            products[i].lastQuote = (products[i].lastQuote * Math.random()).toFixed(2);
-
-        res.json(products);
-    });
+        res.json(cryptos.filter(x => cryptosShowedIds.includes(x.id)));
+    })
 });
 
-app.get('/api/products', function (req, res) {
 
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
+app.get('/api/cryptocurrencies', function (req, res) {
+
+    fs.readFile(CRYPTOCURRENCIES_FILE, function (err, data) {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -157,9 +148,9 @@ app.get('/api/products', function (req, res) {
 });
 
 
-app.get('/api/product/:id', function (req, res) {
+app.get('/api/cryptocurrency/:id', function (req, res) {
 
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
+    fs.readFile(CRYPTOCURRENCIES_FILE, function (err, data) {
         if (err) {
             console.error(err);
             process.exit(1);
@@ -176,88 +167,29 @@ app.get('/api/product/:id', function (req, res) {
     });
 });
 
-app.post('/api/product/create', function (req, res) {
-
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        var products = JSON.parse(data);
-
-        var newProduct = {
-            id: Date.now(),
-            name: req.body.name,
-            price: req.body.price,
-        };
-        products.push(newProduct);
-        fs.writeFile(PRODUCTS_FILE, JSON.stringify(products, null, 4), function (err) {
-            if (err) {
-                console.error(err);
-                process.exit(1);
-            }
-            res.json(products);
-        });
-    });
-});
-
-app.patch('/api/product/edit/:id', function (req, res) {
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        var products = JSON.parse(data);
-
-        for (var i = 0; i <= products.length; i++) {
-            if (products[i]['id'] == req.params.id) {
-                var product = products[i];
-                product.name = req.body.name;
-                product.price = req.body.price;
-
-                products.splice(i, 1);
-                products.push(product);
-
-                fs.writeFile(PRODUCTS_FILE, JSON.stringify(products, null, 4), function (err) {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-                    res.json(products);
-                });
-                break;
-            }
-        }
-    });
-});
-
-app.delete('/api/product/delete/:id', function (req, res) {
-    fs.readFile(PRODUCTS_FILE, function (err, data) {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        var products = JSON.parse(data);
-
-        for (var i = 0; i <= products.length; i++) {
-            if (products[i]['id'] == req.params.id) {
-                products.splice(i, 1);
-
-                fs.writeFile(PRODUCTS_FILE, JSON.stringify(products, null, 4), function (err) {
-                    if (err) {
-                        console.error(err);
-                        process.exit(1);
-                    }
-                    res.json(products);
-                });
-                break;
-            }
-        }
-    });
-});
-
 
 app.listen(app.get('port'), function () {
     console.log('Server started: http://localhost:' + app.get('port') + '/');
 });
 
+setInterval(() => {
+    fs.readFile(CRYPTOCURRENCIES_FILE, function (err, data) {
+        if (err) {
+            console.error(err);
+            process.exit(1);
+        }
+        var json = JSON.parse(data);
+        json.forEach(x => {
+            x.lastQuote = parseFloat((x.lastQuote + (Math.random() * 100 - 50)).toFixed(2));
+            if (parseFloat(x.lastQuote) < 0.0)
+                x.lastQuote = 0.0;
+            x.lastQuoteTime = new Date(Date.now()).toUTCString();
+        });
+        fs.writeFile(CRYPTOCURRENCIES_FILE, JSON.stringify(json), function (err) {
+            if (err) {
+                console.error(err);
+                process.exit(1);
+            }
+        });
+    });
+}, 5000);
