@@ -135,13 +135,6 @@ export default {
     },
 
     mounted() {
-        const queryParams = new URLSearchParams(window.location.search);
-        const paymentDataString = queryParams.get('paymentData');
-        console.log(paymentDataString)
-        if (paymentDataString) {
-            this.paymentData = JSON.parse(paymentDataString);
-        }
-
         setInterval(() => {
             this.fetchCryptosShowed();
         }, 5000);

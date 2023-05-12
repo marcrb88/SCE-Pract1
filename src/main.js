@@ -7,6 +7,8 @@ Vue.use(VueRouter)
 import VueResource from 'vue-resource';
 Vue.use(VueResource);
 
+import axios from 'axios';
+
 
 import App from './App.vue'
 
@@ -18,6 +20,11 @@ const routes = [
         name: 'all_cryptocurrencies',
         path: '/',
         component: AllCryptocurrencies
+    },
+    {
+        name: 'payment-summary',
+        path: '/payment-summary',
+        component: paymentSummary
     }
 ];
 var router = new VueRouter({ routes: routes, mode: 'history' });

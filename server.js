@@ -4,6 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 const cors = require('cors');
+const axios = require('axios');
 app.use(cors());
 
 var CRYPTOCURRENCIES_FILE = path.join(__dirname, 'src/assets/js/components/cryptocurrency-data.json');
@@ -74,7 +75,7 @@ app.get('/api/createPayment', function (req, res) {
 
 app.get('/process', function (req, res) {
     const paymentId = req.query.paymentId;
-
+    
     paypal.payment.get(paymentId, function (error, payment) {
         if (error) {
             console.log(error);
@@ -92,8 +93,10 @@ app.get('/process', function (req, res) {
                 createTime: payment.create_time
 
             };
+            console.log(paymentData);
+            console.log("hola");
+            res.redirect(`http://localhost:8080/payment-summary?order=${JSON.stringify(paymentData)}`);
 
-            res.redirect(`http://localhost:8080?paymentData=${JSON.stringify(paymentData)}`);
         }
     });
 });
@@ -101,7 +104,6 @@ app.get('/process', function (req, res) {
 app.get('/cancel', function (req, res) {
     res.redirect(`http://localhost:8080`);
 });
-
 
 
 app.get('/api/searchCrypto', function (req, res) {
