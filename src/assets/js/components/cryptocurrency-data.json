@@ -1,1 +1,82 @@
-[{"id":1,"name":"etherium","description":"S'utilitza principalment per pagar comissions de transacció i la creació de contractes intel·ligents de blockchain","lastQuote":621.07,"lastQuoteTime":"Sat, 13 May 2023 12:05:20 GMT","image":"https://cryptologos.cc/logos/ethereum-eth-logo.png"},{"id":2,"name":"bitcoin","description":"S'utilitza per adquirir productes i serveis","lastQuote":12632.44,"lastQuoteTime":"Sat, 13 May 2023 12:05:20 GMT","image":"https://cryptologos.cc/logos/bitcoin-btc-logo.png"},{"id":3,"name":"calçot","description":"Els millors a Riudecols","lastQuote":1886.38,"lastQuoteTime":"Sat, 13 May 2023 12:05:20 GMT","image":"https://cryptologos.cc/logos/tether-usdt-logo.png"},{"id":4,"name":"binance","description":"S'utilitza per adquirir productes i serveis","lastQuote":1154.39,"lastQuoteTime":"Sat, 13 May 2023 12:05:20 GMT","image":"https://cryptologos.cc/logos/binance-coin-bnb-logo.png"}]
+[
+    {
+        "id": 1,
+        "name": "Etherium",
+        "description": "S'utilitza principalment per pagar comissions de transacció i la creació de contractes intel·ligents de blockchain",
+        "lastQuote": 1877.117,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/ethereum-eth-logo.png"
+    },
+    {
+        "id": 2,
+        "name": "Bitcoin",
+        "description": "S'utilitza per adquirir productes i serveis",
+        "lastQuote": 27911.7158,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/bitcoin-btc-logo.png"
+    },
+    {
+        "id": 3,
+        "name": "Cardano",
+        "description": "Plataforma de contracte intel·ligent de tercera generació que busca ser millor que altres criptomonedes",
+        "lastQuote": 0.3603,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/cardano-ada-logo.png"
+    },
+    {
+        "id": 4,
+        "name": "Binance",
+        "description": "S'utilitza per adquirir productes i serveis a l'exchange Binance",
+        "lastQuote": 322.8424,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/binance-coin-bnb-logo.png"
+    },
+    {
+        "id": 5,
+        "name": "Litecoin",
+        "description": "Moneda digital per a transaccions ràpides i de baix cost",
+        "lastQuote": 83.275,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/litecoin-ltc-logo.png"
+    },
+    {
+        "id": 6,
+        "name": "Tether",
+        "description": "Stablecoin vinculada al valor del dòlar nord-americà",
+        "lastQuote": 1.0129,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/tether-usdt-logo.png"
+    },
+    {
+        "id": 7,
+        "name": "Dogecoin",
+        "description": "Criptomoneda basada en el popular meme de Doge",
+        "lastQuote": 0.0755,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/dogecoin-doge-logo.png"
+    },
+    {
+        "id": 8,
+        "name": "Xrp",
+        "description": "Criptomoneda utilitzada per a pagaments i transferències a RippleNet",
+        "lastQuote": 0.4499,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/xrp-xrp-logo.png"
+    },
+    {
+        "id": 9,
+        "name": "Solana",
+        "description": "Plataforma blockchain d'alt rendiment per a aplicacions",
+        "lastQuote": 20.9809,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/solana-sol-logo.png"
+    },
+    {
+        "id": 10,
+        "name": "Cosmos",
+        "description": "Xarxa de blockchain interoperable que permet la comunicació entre diferents cadenes",
+        "lastQuote": 11.3023,
+        "lastQuoteTime": "Sat, 13 May 2023 15:05:43 GMT",
+        "image": "https://cryptologos.cc/logos/cosmos-atom-logo.png"
+    }
+]

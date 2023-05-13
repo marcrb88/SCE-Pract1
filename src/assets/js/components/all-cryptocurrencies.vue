@@ -107,23 +107,10 @@
                 </div>
             </div>
         </div>
-
-        <div>
-            <h1 v-if="paymentData">Successful transaction</h1>
-            <p v-if="paymentData"> Payment id: {{ paymentData.id }}</p>
-            <p v-if="paymentData">Payer email: {{ paymentData.payerEmail }}</p>
-            <p v-if="paymentData"> Payer first name: {{ paymentData.payerFirstName }}</p>
-            <p v-if="paymentData"> Payer last name: {{ paymentData.payerLastName }}</p>
-            <p v-if="paymentData">Payer id: {{ paymentData.payerId }}</p>
-            <p v-if="paymentData">Amount: {{ paymentData.amount }}</p>
-            <p v-if="paymentData">Currency: {{ paymentData.currency }}</p>
-            <p v-if="paymentData">Create time: {{ paymentData.createTime }}</p>
-        </div>
     </div>
 </template>
 
 <script>
-import PaymentSummary from './payment-summary.vue';
 import Swal from 'sweetalert2'
 
 export default {
@@ -138,14 +125,12 @@ export default {
             showSearchedCryptos: false,
         }
     },
-    components: {
-        PaymentSummary
-    },
 
     mounted() {
+        document.title = "Marc's Exchange";
         setInterval(() => {
             this.fetchCryptosShowed();
-        }, 5000);
+        }, 300000);
     },
 
     computed: {

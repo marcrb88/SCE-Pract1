@@ -46,12 +46,12 @@ app.get('/api/createPayment', function (req, res) {
     const paymentData = {
         "intent": "sale",
         "payer": {
-            "payment_method": "paypal"
+            "payment_method": "Paypal"
         },
         "transactions": [{
             "amount": {
                 "total": price,
-                "currency": "USD"
+                "currency": "EUR"
             },
             "description": "Compra en línea"
         }],
@@ -90,13 +90,11 @@ app.get('/process', function (req, res) {
                 payerId: payment.payer.payer_info.payer_id,
                 amount: payment.transactions[0].amount.total,
                 currency: payment.transactions[0].amount.currency,
+                payment_method: payment.payer.payment_method,
                 createTime: payment.create_time
 
             };
-            console.log(paymentData);
-            console.log("hola");
             res.redirect(`http://localhost:8080/payment-summary?order=${JSON.stringify(paymentData)}`);
-
         }
     });
 });
@@ -182,7 +180,7 @@ setInterval(() => {
         }
         var json = JSON.parse(data);
         json.forEach(x => {
-            x.lastQuote = parseFloat((x.lastQuote + (Math.random() * 100 - 50)).toFixed(2));
+            x.lastQuote = parseFloat((x.lastQuote * (Math.random() * (1.01 - 0.99) + 0.99)).toFixed(4));
             if (parseFloat(x.lastQuote) < 0.0)
                 x.lastQuote = 0.0;
             x.lastQuoteTime = new Date(Date.now()).toUTCString();
@@ -194,4 +192,4 @@ setInterval(() => {
             }
         });
     });
-}, 5000);
+}, 300000);
