@@ -1,27 +1,31 @@
 <template>
     <div id="all-cryptocurrencies">
-        <div>
-            <h1>All Cryptocurrencies</h1>
-        </div>
-
-        <div class="sticky-top">
-            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Cart ({{ cartCryptos.length }})
-            </button>
-
-            <div class="form-group mb-3" style="position: relative; ">
-                <input type="search" class="form-control-edited" placeholder="Search cryptocoins" v-model="searchQuery"
-                    @input="onInput" @focus="onInput" ref="myInput" @focusout="onFocusOut">
-                <div class="autosuggest__results-container" v-if="showSearchedCryptos">
-                    <div class="autosuggest__dropdown-item" v-for="(cryptocurrency, index) in searchedCryptos"
-                        @mousedown.prevent="onSelect(index)">{{ cryptocurrency.name }}</div>
+        <div class="sticky-top card mb-3">
+            <div class="card-header">
+                <div class="text-end mt-2 mb-3">
+                    <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="bi bi-cart4"></i>({{ cartCryptos.length }})
+                    </button>
                 </div>
-                <button class="btn btn-secondary" style="margin-left: 20px;" @click="search">Search</button>
+                <div class="d-flex justify-content-between">
+                    <div class="input-group">
+                        <div class="form-group" style="position: relative; width: 60%;">
+                            <input type="search" class="form-control" placeholder="Search cryptocoins" v-model="searchQuery"
+                                @input="onInput" @focus="onInput" ref="myInput" @focusout="onFocusOut">
+                            <div class="autosuggest__results-container" v-if="showSearchedCryptos">
+                                <div class="autosuggest__dropdown-item" v-for="(cryptocurrency, index) in searchedCryptos"
+                                    @mousedown.prevent="onSelect(index)">{{ cryptocurrency.name }}</div>
+                            </div>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary bi bi-search" type="button" @click="search"></button>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-secondary col-auto"
+                        :class="this.sort === 'ASC' ? 'bi-arrow-up' : 'bi-arrow-down'" @click="canviarOdre">Price</button>
+
+                </div>
             </div>
-
-            <button class="btn btn-secondary" style="margin-bottom: 20px;" @click="canviarOdre">Canviar ordre ({{ this.sort
-            }})</button>
-
         </div>
 
         <!-- Modal -->
@@ -87,14 +91,18 @@
                     <p>{{ cryptocurrency.description }}</p>
                 </div>
                 <hr>
-                <h3><b>Price History</b></h3>
+                <h4><b>Price History</b></h4>
                 <div class="row">
-                    <div class="col-sm-8">
-                        <p>€{{ cryptocurrency.lastQuote }} <span style="font-size: 12px; vertical-align: middle;">{{
-                            new Date(cryptocurrency.lastQuoteTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }}</span></p>
+                    <div class="col-8">
+                        <h3>€{{ cryptocurrency.lastQuote }} <span style="font-size: 12px; vertical-align: middle;">{{
+                            new Date(cryptocurrency.lastQuoteTime).toLocaleTimeString('en-GB', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) }}</span></h3>
                     </div>
-                    <div class="col-sm-4">
-                        <button @click="addToCart(cryptocurrency)" class="btn btn-primary">Add to Cart</button>
+                    <div class="col-4">
+                        <button @click="addToCart(cryptocurrency)" class="btn btn-primary btn-lg"><i
+                                class="bi bi-cart-plus"></i></button>
                     </div>
                 </div>
             </div>
@@ -184,10 +192,10 @@ export default {
 
         fetchCryptosShowed: function () {
             fetch(`http://localhost:3000/api/cryptocurrencies`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cryptosShowedIds: this.cryptocurrencies.map(x => x.id) })
-                })
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cryptosShowedIds: this.cryptocurrencies.map(x => x.id) })
+            })
                 .then(response => response.json())
                 .then(data => {
                     this.cryptocurrencies = data;
