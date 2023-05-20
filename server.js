@@ -116,7 +116,7 @@ app.get('/api/searchCrypto', function (req, res) {
         if (searchQuery == "")
             res.json(cryptocurrencies)
         else {
-            res.json(cryptocurrencies.filter(x => x.name.toLowerCase().startsWith(searchQuery)))
+            res.json(cryptocurrencies.filter(x => x.name.toLowerCase().startsWith(searchQuery.toLowerCase())))
         }
     });
 });
